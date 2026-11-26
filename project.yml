@@ -12,6 +12,17 @@ targets:
       - path: IPAedit
         excludes:
           - Info.plist
+      # Capstone (ARM64 only), compiled from source. Headers are found through
+      # per-file flags so its generic header names can't shadow system ones.
+      - path: Vendor/capstone
+        includes:
+          - "*.c"
+          - "**/*.c"
+        compilerFlags:
+          - "-DCAPSTONE_HAS_ARM64"
+          - "-DCAPSTONE_USE_SYS_DYN_MEM"
+          - "-I$(SRCROOT)/Vendor/capstone/include"
+          - "-w"
     scheme: {}
     settings:
       base:
@@ -22,6 +33,7 @@ targets:
         MARKETING_VERSION: "1.0"
         CURRENT_PROJECT_VERSION: "1"
         SWIFT_VERSION: "5.0"
+        SWIFT_OBJC_BRIDGING_HEADER: IPAedit/Bridge/IPAedit-Bridging-Header.h
         TARGETED_DEVICE_FAMILY: "1,2"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         CODE_SIGNING_ALLOWED: NO

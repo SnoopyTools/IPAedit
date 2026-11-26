@@ -15,7 +15,13 @@ struct MachOView: View {
                 ViewerError(message: error)
             } else {
                 List {
+                    if slices.contains(where: { ($0.encryption?.cryptid ?? 0) != 0 }) {
+                        Section { EncryptedBanner() }
+                    }
                     Section {
+                        Button { nav.push(.file(url, .inspector)) } label: {
+                            Label("Disassemble & browse classes", systemImage: "chevron.left.forwardslash.chevron.right")
+                        }
                         Button { nav.push(.file(url, .strings)) } label: { Label("Dump strings", systemImage: "text.magnifyingglass") }
                         Button { nav.push(.file(url, .hex)) } label: { Label("Open in Hex Editor", systemImage: "number") }
                     }

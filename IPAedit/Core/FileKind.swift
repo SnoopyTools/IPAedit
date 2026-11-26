@@ -83,7 +83,7 @@ enum FileKind: Equatable {
 }
 
 enum Viewer: String, CaseIterable, Identifiable, Hashable {
-    case text, hex, plist, image, machO, strings, assets, media, pdf, provision, quickLook
+    case text, hex, plist, image, machO, inspector, strings, assets, media, pdf, provision, quickLook
 
     var id: String { rawValue }
     var title: String {
@@ -93,6 +93,7 @@ enum Viewer: String, CaseIterable, Identifiable, Hashable {
         case .plist: return "Plist Editor"
         case .image: return "Image Viewer"
         case .machO: return "Mach-O Info"
+        case .inspector: return "Disassembler & Classes"
         case .strings: return "Strings Dump"
         case .assets: return "Assets.car Browser"
         case .media: return "Media Player"
@@ -108,6 +109,7 @@ enum Viewer: String, CaseIterable, Identifiable, Hashable {
         case .plist: return "list.bullet.indent"
         case .image: return "photo"
         case .machO: return "cpu"
+        case .inspector: return "chevron.left.forwardslash.chevron.right"
         case .strings: return "text.magnifyingglass"
         case .assets: return "square.stack.3d.up"
         case .media: return "play.rectangle"

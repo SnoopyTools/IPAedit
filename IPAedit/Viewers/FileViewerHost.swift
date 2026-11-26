@@ -41,6 +41,7 @@ struct FileViewerHost: View {
         case .plist: PlistEditorView(url: url)
         case .image: ImageViewer(url: url)
         case .machO: MachOView(url: url)
+        case .inspector: InspectorView(url: url)
         case .strings: StringsDumpView(url: url)
         case .assets: AssetsCarView(url: url)
         case .media: MediaPlayerView(url: url)

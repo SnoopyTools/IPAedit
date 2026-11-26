@@ -11,6 +11,13 @@ An iOS file explorer and editor for `.ipa` files. You can open an IPA, browse an
   - Plist editor: binary and XML plists, a tree editor (add, delete, reorder, change type), raw XML editing, choice of save format
   - Image viewer with zoom, and image replacement from Photos or Files (re-encoded to the original format)
   - Mach-O info: architectures, minimum OS and SDK, linked libraries, rpaths, segments, encryption (cryptid), entitlements
+  - Disassembler & classes for 64-bit Mach-O binaries:
+    - ARM64 disassembly (Capstone), with comments that resolve strings, `@selector`s, classes and imported functions
+    - Function list (from `LC_FUNCTION_STARTS`, symbols and ObjC method implementations), tap a branch to follow it
+    - Objective-C classes and categories: superclass, protocols, properties, ivars and methods, plus a class-dump style header
+    - Symbols, imports (including chained-fixup binds), sections, and go to address
+    - Swift names demangled with the system's own `swift_demangle`
+    - A warning for encrypted App Store binaries (cryptid 1)
   - Strings dump for any binary
   - Assets.car browser: view every image rendition and export them all as PNGs (read-only)
   - Provisioning profile viewer, media player, PDF viewer, and Quick Look for everything else
@@ -30,4 +37,4 @@ xcodegen generate
 open IPAedit.xcodeproj
 ```
 
-Requires iOS 16 or later. The app has no third-party dependencies: it uses its own ZIP reader and writer, with deflate from Apple's Compression framework.
+Requires iOS 16 or later. The app uses its own ZIP reader and writer, with deflate from Apple's Compression framework. The only third-party code is [Capstone](https://www.capstone-engine.org) 5.0.3 (BSD licence), with only its ARM64 parts included, in `Vendor/capstone`.
