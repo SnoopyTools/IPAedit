@@ -32,6 +32,12 @@ jobs:
             build | tee build.log | grep -E "error:|warning: unre|BUILD (SUCCEEDED|FAILED)" || true
           test -d build/Build/Products/Release-iphoneos/IPAedit.app
 
+      - name: Check Capstone is linked
+        run: |
+          BIN=build/Build/Products/Release-iphoneos/IPAedit.app/IPAedit
+          echo "C files compiled: $(grep -c 'CompileC' build.log || true)"
+          nm "$BIN" | grep -E " _ipa_disasm_open$| _cs_open$"
+
       - name: Show errors
         if: failure()
         run: grep -n "error:" build.log | head -50 || true
