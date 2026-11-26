@@ -1,0 +1,40 @@
+workflows:
+  ipaedit-unsigned:
+    name: IPAedit (unsigned IPA)
+    instance_type: mac_mini_m2
+    # 120 minutes is the longest build Codemagic allows.
+    max_build_duration: 120
+    environment:
+      xcode: latest
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: '*'
+          include: true
+    scripts:
+      - name: Install XcodeGen
+        script: brew install xcodegen || true
+      - name: Generate Xcode project
+        script: xcodegen generate
+      - name: Build
+        script: |
+          set -o pipefail
+          xcodebuild \
+            -project IPAedit.xcodeproj \
+            -scheme IPAedit \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build | xcpretty || true
+          test -d build/Build/Products/Release-iphoneos/IPAedit.app
+      - name: Package unsigned IPA
+        script: |
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/IPAedit.app Payload/
+          zip -qry IPAedit.ipa Payload
+    artifacts:
+      - IPAedit.ipa
+      - build/Logs/**/*.xcactivitylog

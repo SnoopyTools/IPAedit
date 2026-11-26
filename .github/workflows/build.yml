@@ -1,0 +1,49 @@
+name: Build IPA
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    # Public repos get unlimited free Actions minutes; 360 is GitHub's max job length.
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project IPAedit.xcodeproj \
+            -scheme IPAedit \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build | tee build.log | grep -E "error:|warning: unre|BUILD (SUCCEEDED|FAILED)" || true
+          test -d build/Build/Products/Release-iphoneos/IPAedit.app
+
+      - name: Show errors
+        if: failure()
+        run: grep -n "error:" build.log | head -50 || true
+
+      - name: Package unsigned IPA
+        run: |
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/IPAedit.app Payload/
+          zip -qry IPAedit.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IPAedit
+          path: IPAedit.ipa
+          retention-days: 90
